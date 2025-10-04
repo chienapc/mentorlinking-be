@@ -1,5 +1,106 @@
 package vn.fpt.se18.MentorLinking_BackEnd.entity;
 
-public class User {
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
+import java.util.List;
+
+@Entity
+@Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class User extends AbstractEntity<Long> {
+
+    @Email(message = "Email không hợp lệ")
+    @NotBlank(message = "Email không được để trống")
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
+    @Size(min = 8, message = "Mật khẩu phải có ít nhất 8 ký tự")
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
+
+    @Column(name = "fullname")
+    private String fullname;
+
+    @Column(name = "dob")
+    private java.time.LocalDate dob;
+
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "gender")
+    private String gender;
+
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "current_location")
+    private String currentLocation;
+
+    @Column(name = "title")
+    private String title;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "highest_degree_id")
+    private HighestDegree highestDegree;
+
+    @Column(name = "linkedin_url")
+    private String linkedinUrl;
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
+    @Column(name = "intro", columnDefinition = "TEXT")
+    private String intro;
+
+    @Column(name = "rating")
+    private Float rating;
+
+    @Column(name = "number_of_booking")
+    private Integer numberOfBooking;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status_id")
+    private Status status;
+
+    @Column(name = "is_blocked", columnDefinition = "boolean default false")
+    private Boolean isBlocked;
+
+    @Column(name = "last_login")
+    private java.time.LocalDateTime lastLogin;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by")
+    private User createdBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "updated_by")
+    private User updatedBy;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MentorService> mentorServices;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MentorEducation> mentorEducations;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MentorTest> mentorTests;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MentorExperience> mentorExperiences;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Schedule> schedules;
 }
+

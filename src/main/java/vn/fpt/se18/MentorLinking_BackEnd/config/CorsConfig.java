@@ -26,10 +26,4 @@ public class CorsConfig {
         };
     }
 
-    @Bean
-    public LocaleResolver localeResolver() {
-        SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(new Locale("vi"));
-        return slr;
-    }
 }
