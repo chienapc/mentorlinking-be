@@ -1,4 +1,4 @@
-package vn.fpt.se18.MentorLinking_BackEnd.dto.reponse;
+package vn.fpt.se18.MentorLinking_BackEnd.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
