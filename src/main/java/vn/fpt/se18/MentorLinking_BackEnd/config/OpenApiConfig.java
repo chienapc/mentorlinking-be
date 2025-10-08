@@ -22,9 +22,9 @@ public class OpenApiConfig {
     @Bean
     public GroupedOpenApi publicApi(@Value("${openapi.service.api-docs}") String apiDocs) {
         return GroupedOpenApi.builder()
-            .group(apiDocs) // /v3/api-docs/backend-service
-            .packagesToScan("vn.fpt.se18.MentorLinking.controller")
-            .build();
+                .group(apiDocs)
+                .packagesToScan("vn.fpt.se18.MentorLinking_BackEnd.controller")
+                .build();
     }
 
     @Bean
