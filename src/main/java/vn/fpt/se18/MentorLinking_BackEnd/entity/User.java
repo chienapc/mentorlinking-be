@@ -5,7 +5,13 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import vn.fpt.se18.MentorLinking_BackEnd.util.UserStatus;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 @Entity
@@ -15,7 +21,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User extends AbstractEntity<Long> {
+public class User extends AbstractEntity<Long> implements UserDetails, Serializable {
+    @Column(nullable = false, unique = true)
+    private String username;
 
     @Email(message = "Email không hợp lệ")
     @NotBlank(message = "Email không được để trống")
@@ -30,7 +38,7 @@ public class User extends AbstractEntity<Long> {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    @Column(name = "fullname")
+    @Column(name = "full_name")
     private String fullname;
 
     @Column(name = "dob")
@@ -102,5 +110,40 @@ public class User extends AbstractEntity<Long> {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Schedule> schedules;
-}
 
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Trả về authorities dựa trên role của user
+        if (role != null) {
+            return List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + role.getName()));
+        }
+        return List.of();
+    }
+
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
+}

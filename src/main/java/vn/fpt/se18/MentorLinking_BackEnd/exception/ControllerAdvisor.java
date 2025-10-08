@@ -10,7 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import vn.fpt.se18.MentorLinking_BackEnd.dto.reponse.BaseResponse;
+import vn.fpt.se18.MentorLinking_BackEnd.dto.response.BaseResponse;
 
 import java.nio.file.AccessDeniedException;
 import java.util.Objects;
