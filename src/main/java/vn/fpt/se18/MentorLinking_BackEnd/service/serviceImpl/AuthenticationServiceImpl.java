@@ -9,7 +9,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.ResetPasswordDTO;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.SignInRequest;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.SignUpMentorRequest;
@@ -57,14 +56,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public TokenResponse accessToken(SignInRequest request) {
         log.info("---------- authenticate ----------");
-
-        // authenticate
-//        var user = userService.getByUsername(request.getUsername());
-//        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-//                request.getUsername(),
-//                request.getPassword(),
-//                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().getName()))
-//        ));
 
         var user = userService.getUserByEmail(request.getEmail());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -272,13 +263,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .orElse(null);
         }
 
-        // Upload avatar if provided
         String avatarUrl = null;
         if (request.getAvatar() != null && !request.getAvatar().isEmpty()) {
-//            avatarUrl = fileUploadService.uploadFile(request.getAvatar(), "avatars");
+            avatarUrl = fileUploadService.uploadFile(request.getAvatar(), "avatars");
         }
 
-        // Create and save user
         User user = User.builder()
                 .username(request.getEmail())
                 .email(request.getEmail())
@@ -308,10 +297,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 List<String> certificateUrls = new ArrayList<>();
 
                 if (education.getDegreesFile() != null) {
-                    for (MultipartFile file : education.getDegreesFile()) {
-                        String certificateUrl = fileUploadService.uploadFile(file, "certificates");
+                        String certificateUrl = fileUploadService.uploadFile(education.getDegreesFile(), "certificates");
                         certificateUrls.add(certificateUrl);
-                    }
                 }
 
                 MentorEducation mentorEducation = MentorEducation.builder()
@@ -335,10 +322,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 List<String> experienceUrls = new ArrayList<>();
 
                 if (experience.getExperiencesFile() != null) {
-                    for (MultipartFile file : experience.getExperiencesFile()) {
-                        String experienceUrl = fileUploadService.uploadFile(file, "experiences");
+                        String experienceUrl = fileUploadService.uploadFile(experience.getExperiencesFile(), "experiences");
                         experienceUrls.add(experienceUrl);
-                    }
                 }
 
                 MentorExperience mentorExperience = MentorExperience.builder()
@@ -362,10 +347,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 List<String> scoreUrls = new ArrayList<>();
 
                 if (certificate.getCertificatesFile() != null) {
-                    for (MultipartFile file : certificate.getCertificatesFile()) {
-                        String scoreUrl = fileUploadService.uploadFile(file, "tests");
+                        String scoreUrl = fileUploadService.uploadFile(certificate.getCertificatesFile(), "tests");
                         scoreUrls.add(scoreUrl);
-                    }
                 }
 
                 MentorTest mentorTest = MentorTest.builder()

@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.BaseRequest;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.SignInRequest;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.SignUpMentorRequest;
@@ -19,6 +16,8 @@ import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.SignUpRequest;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.response.BaseResponse;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.response.auth.TokenResponse;
 import vn.fpt.se18.MentorLinking_BackEnd.service.AuthenticationService;
+
+import java.util.Date;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -50,36 +49,18 @@ public class AuthenticationController {
 
 
     @PostMapping("/login")
-    public BaseResponse<TokenResponse> login(@Valid @RequestBody BaseRequest<SignInRequest> request) {
-        TokenResponse tokenResponse = authenticationService.accessToken(request.getData());
-        return BaseResponse.<TokenResponse>builder()
-                .requestDateTime(request.getRequestDateTime())
-                .respCode("0")
-                .description("Login successfully")
-                .data(tokenResponse)
-                .build();
+    public TokenResponse login(@Valid @RequestBody SignInRequest request) {
+        return authenticationService.accessToken(request);
     }
 
     @PostMapping("/signup")
-    public BaseResponse<TokenResponse> signUp(@Valid @RequestBody BaseRequest<SignUpRequest> request) {
-        TokenResponse tokenResponse = authenticationService.signUp(request.getData());
-        return BaseResponse.<TokenResponse>builder()
-                .requestDateTime(request.getRequestDateTime())
-                .respCode("0")
-                .description("User registered successfully")
-                .data(tokenResponse)
-                .build();
+    public TokenResponse signUp(@Valid @RequestBody SignUpRequest request) {
+        return authenticationService.signUp(request);
     }
 
     @PostMapping("/mentor-signup")
-    public BaseResponse<TokenResponse> MentorSignUp(@Valid @RequestBody BaseRequest<SignUpMentorRequest> request) {
-        TokenResponse tokenResponse = authenticationService.signUpMentor(request.getData());
-        return BaseResponse.<TokenResponse>builder()
-                .requestDateTime(request.getRequestDateTime())
-                .respCode("0")
-                .description("User registered successfully")
-                .data(tokenResponse)
-                .build();
+    public TokenResponse MentorSignUp(@Valid @ModelAttribute SignUpMentorRequest request) {
+        return authenticationService.signUpMentor(request);
     }
 
 

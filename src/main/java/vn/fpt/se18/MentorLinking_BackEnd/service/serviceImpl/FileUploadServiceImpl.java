@@ -1,15 +1,13 @@
 package vn.fpt.se18.MentorLinking_BackEnd.service.serviceImpl;
 
-
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.UUID;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @Service
@@ -17,36 +15,48 @@ public class FileUploadServiceImpl {
 
     private static final Logger logger = Logger.getLogger(FileUploadServiceImpl.class.getName());
 
-    @Value("${file.upload.path}")
-    private String uploadPath;
+    @Value("${cloudinary.cloud-name}")
+    private String cloudName;
 
-    @Value("${file.upload.url:http://localhost:8080/api/files}")
-    private String fileServerUrl;
+    @Value("${cloudinary.api-key}")
+    private String apiKey;
+
+    @Value("${cloudinary.api-secret}")
+    private String apiSecret;
 
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
     private static final String[] ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "pdf", "doc", "docx"};
 
+    private Cloudinary getCloudinaryInstance() {
+        return new Cloudinary(ObjectUtils.asMap(
+                "cloud_name", cloudName,
+                "api_key", apiKey,
+                "api_secret", apiSecret
+        ));
+    }
 
     public String uploadFile(MultipartFile file, String folder) {
         try {
             validateFile(file);
 
-            Path folderPath = Paths.get(uploadPath, folder);
-            Files.createDirectories(folderPath);
+            Cloudinary cloudinary = getCloudinaryInstance();
 
-            String originalFilename = file.getOriginalFilename();
-            String fileExtension = getFileExtension(originalFilename);
-            String uniqueFilename = UUID.randomUUID() + "." + fileExtension;
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                    ObjectUtils.asMap(
+                            "folder", "mentor-linking/" + folder,
+                            "resource_type", "auto",
+                            "use_filename", true,
+                            "unique_filename", true
+                    )
+            );
 
-            Path filePath = folderPath.resolve(uniqueFilename);
-            Files.write(filePath, file.getBytes());
+            String fileUrl = (String) uploadResult.get("secure_url");
+            logger.info("File uploaded successfully to Cloudinary: " + fileUrl);
 
-            logger.info("File uploaded successfully: " + filePath);
-
-            return fileServerUrl + "/" + folder + "/" + uniqueFilename;
+            return fileUrl;
 
         } catch (IOException e) {
-            logger.severe("Error uploading file: " + e.getMessage());
+            logger.severe("Error uploading file to Cloudinary: " + e.getMessage());
             throw new RuntimeException("Failed to upload file: " + e.getMessage());
         }
     }
@@ -76,7 +86,6 @@ public class FileUploadServiceImpl {
         }
     }
 
-
     private String getFileExtension(String filename) {
         if (filename == null || filename.isEmpty()) {
             throw new IllegalArgumentException("Filename cannot be empty");
@@ -84,23 +93,40 @@ public class FileUploadServiceImpl {
         return filename.substring(filename.lastIndexOf(".") + 1);
     }
 
-
     public boolean deleteFile(String fileUrl, String folder) {
         try {
-            String filename = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
-            Path filePath = Paths.get(uploadPath, folder, filename);
+            Cloudinary cloudinary = getCloudinaryInstance();
 
-            if (Files.exists(filePath)) {
-                Files.delete(filePath);
-                logger.info("File deleted successfully: " + filePath);
+            // Extract public_id từ URL Cloudinary
+            String publicId = extractPublicId(fileUrl, folder);
+
+            Map deleteResult = cloudinary.uploader().destroy(publicId,
+                    ObjectUtils.asMap("resource_type", "auto")
+            );
+
+            String result = (String) deleteResult.get("result");
+            if ("ok".equals(result)) {
+                logger.info("File deleted successfully from Cloudinary: " + publicId);
                 return true;
             } else {
-                logger.warning("File not found: " + filePath);
+                logger.warning("Failed to delete file from Cloudinary: " + publicId);
                 return false;
             }
+
         } catch (IOException e) {
-            logger.severe("Error deleting file: " + e.getMessage());
+            logger.severe("Error deleting file from Cloudinary: " + e.getMessage());
             throw new RuntimeException("Failed to delete file: " + e.getMessage());
         }
+    }
+
+    private String extractPublicId(String fileUrl, String folder) {
+        // Cloudinary URL format: https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}
+        String[] parts = fileUrl.split("/upload/");
+        if (parts.length == 2) {
+            // Remove file extension
+            String path = parts[1];
+            return path.substring(0, path.lastIndexOf("."));
+        }
+        throw new IllegalArgumentException("Invalid Cloudinary URL format");
     }
 }
