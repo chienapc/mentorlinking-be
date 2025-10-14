@@ -29,7 +29,11 @@ openapi:
     title: Backend service
     version: 1.0.0
 
-
+logging:
+  level:
+    org:
+      springframework:
+        security=DEBUG:
 
 jwt:
   secretKey: 123acv

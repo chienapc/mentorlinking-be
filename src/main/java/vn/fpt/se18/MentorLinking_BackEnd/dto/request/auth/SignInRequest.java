@@ -8,10 +8,10 @@ import java.io.Serializable;
 @Getter
 public class SignInRequest implements Serializable {
 
-    @NotBlank(message = "username must be not null")
-    private String username;
+    @NotBlank(message = "email must be not null")
+    private String email;
 
-    @NotBlank(message = "username must be not blank")
+    @NotBlank(message = "password must be not blank")
     private String password;
 
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.BaseRequest;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.SignInRequest;
+import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.SignUpMentorRequest;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.SignUpRequest;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.response.BaseResponse;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.response.auth.TokenResponse;
@@ -69,6 +70,19 @@ public class AuthenticationController {
                 .data(tokenResponse)
                 .build();
     }
+
+    @PostMapping("/mentor-signup")
+    public BaseResponse<TokenResponse> MentorSignUp(@Valid @RequestBody BaseRequest<SignUpMentorRequest> request) {
+        TokenResponse tokenResponse = authenticationService.signUpMentor(request.getData());
+        return BaseResponse.<TokenResponse>builder()
+                .requestDateTime(request.getRequestDateTime())
+                .respCode("0")
+                .description("User registered successfully")
+                .data(tokenResponse)
+                .build();
+    }
+
+
 
 //    @PostMapping("/forgot-password")
 //    public ResponseEntity<String> forgotPassword(@RequestBody String email) {

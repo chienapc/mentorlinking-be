@@ -21,7 +21,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class UserController {
 
     @PostMapping("/test")
-    public ResponseEntity<String> accessToken(@RequestBody SignInRequest request) {
-        return new ResponseEntity<>("Test", OK);
+    public String accessToken() {
+        return "Hello";
     }
 }
