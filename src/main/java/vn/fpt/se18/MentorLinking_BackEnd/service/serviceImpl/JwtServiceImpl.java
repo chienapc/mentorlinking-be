@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import vn.fpt.se18.MentorLinking_BackEnd.entity.User;
 import vn.fpt.se18.MentorLinking_BackEnd.exception.AppException;
 import vn.fpt.se18.MentorLinking_BackEnd.exception.ErrorCode;
 import vn.fpt.se18.MentorLinking_BackEnd.service.JwtService;
@@ -72,9 +73,12 @@ public class JwtServiceImpl implements JwtService {
 
     private String generateToken(Map<String, Object> claims, UserDetails userDetails) {
         log.info("---------- generateToken ----------");
+        User user = (User) userDetails;
+        claims.put("role", user.getRole().getName());
+        claims.put("email", user.getEmail());
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(user.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * expiryHour))
                 .signWith(getKey(ACCESS_TOKEN), SignatureAlgorithm.HS256)
@@ -83,9 +87,10 @@ public class JwtServiceImpl implements JwtService {
 
     private String generateRefreshToken(Map<String, Object> claims, UserDetails userDetails) {
         log.info("---------- generateRefreshToken ----------");
+        String email = ((User) userDetails).getEmail();
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * expiryDay))
                 .signWith(getKey(REFRESH_TOKEN), SignatureAlgorithm.HS256)
@@ -94,9 +99,10 @@ public class JwtServiceImpl implements JwtService {
 
     private String generateResetToken(Map<String, Object> claims, UserDetails userDetails) {
         log.info("---------- generateResetToken ----------");
+        String email = ((User) userDetails).getEmail();
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .signWith(getKey(RESET_TOKEN), SignatureAlgorithm.HS256)

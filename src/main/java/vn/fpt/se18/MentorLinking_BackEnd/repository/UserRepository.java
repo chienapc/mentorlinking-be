@@ -1,5 +1,7 @@
 package vn.fpt.se18.MentorLinking_BackEnd.repository;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,6 +14,9 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
+    @Query("SELECT u FROM User u  WHERE u.email = :email")
+    Optional<User> findByEmailWithRole(String email);
+
     Optional<User> findByEmail(String email);
 
     @Query("SELECT u FROM User u WHERE u.username = ?1")
@@ -22,5 +27,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u JOIN FETCH u.role WHERE u.username = :username")
     Optional<User> findByUsernameWithRole(@Param("username") String username);
-
 }

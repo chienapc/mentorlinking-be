@@ -34,7 +34,7 @@ public class User extends AbstractEntity<Long> implements UserDetails, Serializa
     @Column(name = "password", nullable = false)
     private String password;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
@@ -144,6 +144,6 @@ public class User extends AbstractEntity<Long> implements UserDetails, Serializa
 
     @Override
     public String getUsername() {
-        return this.username;
+        return this.email;
     }
 }

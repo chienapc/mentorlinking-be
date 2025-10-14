@@ -25,3 +25,13 @@ logging:
   level:
     root: INFO
     web: INFO
+
+
+    org:
+      springframework:
+        security=DEBUG:
+
+file:
+  upload:
+    path: uploads
+    url: http://localhost:8080/api/files

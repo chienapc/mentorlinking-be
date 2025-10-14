@@ -3,6 +3,7 @@ package vn.fpt.se18.MentorLinking_BackEnd.service;
 import jakarta.servlet.http.HttpServletRequest;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.ResetPasswordDTO;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.SignInRequest;
+import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.SignUpMentorRequest;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.SignUpRequest;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.response.auth.TokenResponse;
 
@@ -21,4 +22,6 @@ public interface AuthenticationService {
     String changePassword(ResetPasswordDTO request);
 
     TokenResponse signUp(SignUpRequest request);
+
+    TokenResponse signUpMentor(SignUpMentorRequest request);
 }

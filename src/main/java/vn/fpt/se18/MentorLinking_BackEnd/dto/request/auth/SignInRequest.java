@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class SignInRequest implements Serializable {
 
     @NotBlank(message = "username must be not null")
-    private String username;
+    private String email;
 
     @NotBlank(message = "username must be not blank")
     private String password;

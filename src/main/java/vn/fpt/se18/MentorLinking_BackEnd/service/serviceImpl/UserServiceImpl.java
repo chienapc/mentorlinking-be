@@ -23,8 +23,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByUsernameWithRole(username)
+//        return username -> userRepository.findByUsernameWithRole(username)
+//                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        return username -> userRepository.findByEmailWithRole(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
     }
 
     @Override
