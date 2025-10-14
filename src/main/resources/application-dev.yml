@@ -37,3 +37,8 @@ logging:
 
 jwt:
   secretKey: 123acv
+
+cloudinary:
+  cloud-name: duqmoyiyk
+  api-key: 258371466771521
+  api-secret: jZ8UmEBTj_HxZtBV9MPzIPJ5T3Y
