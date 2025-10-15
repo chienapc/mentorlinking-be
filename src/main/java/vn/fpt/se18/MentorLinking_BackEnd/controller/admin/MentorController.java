@@ -1,4 +1,4 @@
-package vn.fpt.se18.MentorLinking_BackEnd.controller;
+package vn.fpt.se18.MentorLinking_BackEnd.controller.admin;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,6 @@ import vn.fpt.se18.MentorLinking_BackEnd.dto.response.BaseResponse;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.response.mentor.MentorDetailResponse;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.response.mentor.MentorPageResponse;
 import vn.fpt.se18.MentorLinking_BackEnd.service.MentorService;
-import vn.fpt.se18.MentorLinking_BackEnd.service.serviceImpl.MentorServiceImpl;
 
 @RestController
 @RequestMapping("/mentors")

@@ -47,4 +47,6 @@ public class MentorResponse implements Serializable {
 
     private Integer numberOfBooking;
 
+    private List<String> approvedCountries; // List of approved country names
+
 }

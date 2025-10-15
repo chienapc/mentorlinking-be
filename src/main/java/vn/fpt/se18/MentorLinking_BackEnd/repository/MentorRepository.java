@@ -4,7 +4,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vn.fpt.se18.MentorLinking_BackEnd.entity.User;
 
@@ -14,6 +13,9 @@ public interface MentorRepository extends JpaRepository<User, Long> {
     @Query("SELECT DISTINCT u FROM User u " +
             "JOIN u.role r " +
             "JOIN u.status s " +
+            "LEFT JOIN FETCH u.mentorCountries mc " +
+            "LEFT JOIN FETCH mc.country c " +
+            "LEFT JOIN FETCH mc.status mcs " +
             "WHERE r.name = 'MENTOR' " +
             "AND s.code = 'ACTIVE' " +
             "AND (u.isBlocked = false OR u.isBlocked IS NULL)" )
@@ -27,6 +29,9 @@ public interface MentorRepository extends JpaRepository<User, Long> {
             "LEFT JOIN u.mentorExperiences mexp " +
             "LEFT JOIN u.mentorServices ms " +
             "LEFT JOIN u.mentorTests mt " +
+            "LEFT JOIN FETCH u.mentorCountries mc " +
+            "LEFT JOIN FETCH mc.country c " +
+            "LEFT JOIN FETCH mc.status mcs " +
             "WHERE r.name = 'MENTOR' " +
             "AND s.code = 'ACTIVE' " +
             "AND (u.isBlocked = false OR u.isBlocked IS NULL) " +
@@ -43,6 +48,9 @@ public interface MentorRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u " +
             "JOIN FETCH u.role r " +
             "JOIN FETCH u.status s " +
+            "LEFT JOIN FETCH u.mentorCountries mc " +
+            "LEFT JOIN FETCH mc.country c " +
+            "LEFT JOIN FETCH mc.status mcs " +
             "WHERE r.name = 'MENTOR' " +
             "AND s.code = 'ACTIVE' " +
             "AND (u.isBlocked = false OR u.isBlocked IS NULL) " +
