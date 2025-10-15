@@ -28,7 +28,7 @@ public class AppConfig {
     private final UserService userService;
     private final PreFilter preFilter;
 
-    private String[] WHITE_LIST = {"/auth/**"};
+    private String[] WHITE_LIST = {"/auth/**", "/mentors", "/mentors/{id}"};
 
 
     @Bean
