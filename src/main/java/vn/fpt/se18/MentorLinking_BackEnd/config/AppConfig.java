@@ -45,7 +45,7 @@ public class AppConfig {
                         .requestMatchers(HttpMethod.GET,
                                 "/mentors", "/mentors/{id}",
                                 "/blogs", "/blogs/{id}",
-                                "/mentor-policy", "/customer-policy")
+                                "/mentor-policies/**", "/customer-policies/**")
                         .permitAll()
                         .requestMatchers("/auth/**", "/auth/refresh-token")
                         .permitAll()

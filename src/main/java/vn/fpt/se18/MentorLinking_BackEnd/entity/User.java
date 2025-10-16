@@ -7,11 +7,9 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import vn.fpt.se18.MentorLinking_BackEnd.util.UserStatus;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 @Entity
@@ -88,6 +86,12 @@ public class User extends AbstractEntity<Long> implements UserDetails, Serializa
     @Column(name = "last_login")
     private java.time.LocalDateTime lastLogin;
 
+    @Column(name = "bank_account_number")
+    private String bankAccountNumber;
+
+    @Column(name = "bank_name")
+    private String bankName;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private User createdBy;
@@ -111,6 +115,8 @@ public class User extends AbstractEntity<Long> implements UserDetails, Serializa
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Schedule> schedules;
 
+    @OneToMany(mappedBy = "mentor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MentorCountry> mentorCountries;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

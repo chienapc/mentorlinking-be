@@ -34,4 +34,5 @@ public class MentorDetailResponse implements Serializable {
     private List<MentorExperienceResponse> experiences;
     private List<MentorServiceResponse> services;
     private List<MentorTestResponse> tests;
+    private List<CountryResponse> approvedCountries;
 }

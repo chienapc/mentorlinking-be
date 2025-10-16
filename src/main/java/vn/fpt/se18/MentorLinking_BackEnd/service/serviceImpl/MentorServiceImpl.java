@@ -1,7 +1,6 @@
 package vn.fpt.se18.MentorLinking_BackEnd.service.serviceImpl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -57,24 +56,33 @@ public class MentorServiceImpl implements MentorService {
         }
 
         List<MentorResponse> mentorResponses = entityPage.stream().map(
-                user -> MentorResponse.builder()
-                        .id(user.getId())
-                        .username(user.getUsername())
-                        .email(user.getEmail())
-                        .password(user.getPassword())
-                        .fullname(user.getFullname())
-                        .dob(user.getDob())
-                        .phone(user.getPhone())
-                        .gender(user.getGender())
-                        .address(user.getAddress())
-                        .currentLocation(user.getCurrentLocation())
-                        .title(user.getTitle())
-                        .linkedinUrl(user.getLinkedinUrl())
-                        .avatarUrl(user.getAvatarUrl())
-                        .intro(user.getIntro())
-                        .rating(user.getRating())
-                        .numberOfBooking(user.getNumberOfBooking())
-                        .build()
+                user -> {
+                    // Map approved countries - only get APPROVED status
+                    List<String> approvedCountries = user.getMentorCountries().stream()
+                            .filter(mentorCountry -> "APPROVED".equals(mentorCountry.getStatus().getCode()))
+                            .map(mentorCountry -> mentorCountry.getCountry().getName())
+                            .toList();
+
+                    return MentorResponse.builder()
+                            .id(user.getId())
+                            .username(user.getUsername())
+                            .email(user.getEmail())
+                            .password(user.getPassword())
+                            .fullname(user.getFullname())
+                            .dob(user.getDob())
+                            .phone(user.getPhone())
+                            .gender(user.getGender())
+                            .address(user.getAddress())
+                            .currentLocation(user.getCurrentLocation())
+                            .title(user.getTitle())
+                            .linkedinUrl(user.getLinkedinUrl())
+                            .avatarUrl(user.getAvatarUrl())
+                            .intro(user.getIntro())
+                            .rating(user.getRating())
+                            .numberOfBooking(user.getNumberOfBooking())
+                            .approvedCountries(approvedCountries)
+                            .build();
+                }
         ).toList();
 
         MentorPageResponse mentorPageResponse = new MentorPageResponse();
@@ -134,6 +142,18 @@ public class MentorServiceImpl implements MentorService {
                         .build())
                 .toList();
 
+        // Map approved countries - only get APPROVED status
+        List<CountryResponse> approvedCountries = mentor.getMentorCountries().stream()
+                .filter(mentorCountry -> "APPROVED".equals(mentorCountry.getStatus().getCode()))
+                .map(mentorCountry -> CountryResponse.builder()
+                        .id(mentorCountry.getCountry().getId())
+                        .code(mentorCountry.getCountry().getCode())
+                        .name(mentorCountry.getCountry().getName())
+                        .flagUrl(mentorCountry.getCountry().getFlagUrl())
+                        .description(mentorCountry.getCountry().getDescription())
+                        .build())
+                .toList();
+
         return MentorDetailResponse.builder()
                 .id(mentor.getId())
                 .username(mentor.getUsername())
@@ -155,6 +175,7 @@ public class MentorServiceImpl implements MentorService {
                 .experiences(experiences)
                 .services(services)
                 .tests(tests)
+                .approvedCountries(approvedCountries)
                 .build();
     }
 }
