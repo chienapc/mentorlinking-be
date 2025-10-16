@@ -16,8 +16,8 @@ public interface MentorRepository extends JpaRepository<User, Long> {
             "JOIN u.status s " +
             "WHERE r.name = 'MENTOR' " +
             "AND s.code = 'ACTIVE' " +
-            "AND (u.isBlocked = false OR u.isBlocked IS NULL)" +
-            " ORDER BY u.numberOfBooking ASC")
+            "AND (u.isBlocked = false OR u.isBlocked IS NULL)" )
+//            " ORDER BY u.numberOfBooking ASC")
     Page<User> getAllMentorWithRelatedData(Pageable pageable);
 
     @Query("SELECT DISTINCT u FROM User u " +

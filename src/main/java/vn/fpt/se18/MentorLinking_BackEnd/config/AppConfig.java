@@ -19,6 +19,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import vn.fpt.se18.MentorLinking_BackEnd.service.UserService;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+import org.springframework.http.HttpMethod;
+
 
 @Configuration
 @Profile("!prod")
@@ -28,7 +30,7 @@ public class AppConfig {
     private final UserService userService;
     private final PreFilter preFilter;
 
-    private String[] WHITE_LIST = {"/auth/**", "/mentors", "/mentors/{id}"};
+    //private String[] WHITE_LIST = {"/auth/**","/mentors", "/mentors/{id}","/auth/refresh-token","/blogs","blogs/{id}","/mentor-policy","/customer-policy"};
 
 
     @Bean
@@ -39,9 +41,20 @@ public class AppConfig {
     @Bean
     public SecurityFilterChain configure(@NonNull HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(WHITE_LIST).permitAll().anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.GET,
+                                "/mentors", "/mentors/{id}",
+                                "/blogs", "/blogs/{id}",
+                                "/mentor-policy", "/customer-policy")
+                        .permitAll()
+                        .requestMatchers("/auth/**", "/auth/refresh-token")
+                        .permitAll()
+                        .anyRequest().authenticated()
+                )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
-                .authenticationProvider(provider()).addFilterBefore(preFilter, UsernamePasswordAuthenticationFilter.class);
+                .authenticationProvider(provider())
+                .addFilterBefore(preFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

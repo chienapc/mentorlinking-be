@@ -59,13 +59,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         log.info("---------- authenticate ----------");
 
         // authenticate
-//        var user = userService.getByUsername(request.getUsername());
-//        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-//                request.getUsername(),
-//                request.getPassword(),
-//                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().getName()))
-//        ));
-
         var user = userService.getUserByEmail(request.getEmail());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getEmail(),
@@ -77,9 +70,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var accessToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
 
-        // save to db
+        // save to db - use email consistently
         tokenService.save(Token.builder()
-                .username(user.getUsername())
+                .username(user.getEmail()) // Use email instead of username
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build());
@@ -104,21 +97,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         if (StringUtils.isNotBlank(email)) {
             var user = userService.getUserByEmail(email);
-            var storedToken = tokenService.getByUsername(email); // key now is email
+            var storedToken = tokenService.getByUsername(user.getEmail()); // Use email consistently
 
             if (jwtService.isValid(refreshToken, REFRESH_TOKEN, user) &&
                     refreshToken.equals(storedToken.getRefreshToken())) {
                 var accessToken = jwtService.generateToken(user);
+                var newRefreshToken = jwtService.generateRefreshToken(user);
 
                 tokenService.save(Token.builder()
-                        .username(user.getUsername()) // email
+                        .username(user.getEmail()) // Use email consistently
                         .accessToken(accessToken)
-                        .refreshToken(refreshToken)
+                        .refreshToken(newRefreshToken)
                         .build());
 
                 return TokenResponse.builder()
                         .accessToken(accessToken)
-                        .refreshToken(refreshToken)
+                        .refreshToken(newRefreshToken)
                         .userId(user.getId())
                         .build();
             }
@@ -221,6 +215,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .orElseThrow(() -> new AppException(ErrorCode.UNCATEGORIZED, "Default role not found"));
 
         User user = User.builder()
+                .username(request.getEmail()) // Set username to email for consistency
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .fullname(request.getFullName())
@@ -233,9 +228,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var accessToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
 
-        // Save tokens to db
+        // Save tokens to db - use email consistently
         tokenService.save(Token.builder()
-                .username(user.getUsername())
+                .username(user.getEmail()) // Use email instead of username
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build());
@@ -401,3 +396,4 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return user;
     }
 }
+

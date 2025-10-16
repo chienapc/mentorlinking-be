@@ -14,6 +14,11 @@ public enum ErrorCode {
     INVALID_INPUT("05", "INVALID_INPUT", HttpStatus.BAD_REQUEST),
     ERROR_PATH("06", "ERROR_PATH", HttpStatus.BAD_REQUEST),
     INVALID_ENDPOINT("07", "INVALID_ENDPOINT", HttpStatus.BAD_REQUEST),
+    JWT_EXPIRED("08", "JWT token has expired", HttpStatus.UNAUTHORIZED),
+    JWT_INVALID_SIGNATURE("09", "JWT signature is invalid", HttpStatus.UNAUTHORIZED),
+    JWT_MALFORMED("10", "JWT token is malformed", HttpStatus.UNAUTHORIZED),
+    JWT_UNSUPPORTED("11", "JWT token is unsupported", HttpStatus.UNAUTHORIZED),
+    JWT_ILLEGAL_ARGUMENT("12", "JWT token is invalid", HttpStatus.UNAUTHORIZED),
     ;
     private final String code;
     private final String message;

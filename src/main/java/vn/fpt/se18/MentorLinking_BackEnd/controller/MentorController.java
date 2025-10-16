@@ -2,6 +2,7 @@ package vn.fpt.se18.MentorLinking_BackEnd.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.response.BaseResponse;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.response.mentor.MentorDetailResponse;
@@ -19,6 +20,7 @@ public class MentorController {
     private final MentorService mentorService;
 
     @GetMapping()
+    @PreAuthorize("hasRole('MENTOR')")
     public BaseResponse<MentorPageResponse> getAllMentors(@RequestParam(required = false) String keyword,
                                                           @RequestParam(defaultValue = "numberOfBooking:desc") String sort,
                                                           @RequestParam(defaultValue = "0") int page,
