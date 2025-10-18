@@ -56,11 +56,14 @@ public class PreFilter extends OncePerRequestFilter {
 
         // Skip JWT validation for these endpoints
         if (path.equals("/auth/refresh-token") || path.equals("/auth/login") || path.equals("/auth/signup") ||
-            path.equals("/auth/access-token") || path.startsWith("/auth/")) {
+            path.equals("/auth/access-token") || path.startsWith("/auth/") ) {
             log.info("Skipping JWT validation for path: {}", path);
             filterChain.doFilter(request, response);
             return;
         }
+
+//        ||
+//        path.startsWith("/api/mentors") || path.startsWith("/api/blogs")
 
         final String authorization = request.getHeader(AUTHORIZATION);
 

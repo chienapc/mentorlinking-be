@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 import vn.fpt.se18.MentorLinking_BackEnd.service.UserService;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -29,9 +30,7 @@ public class AppConfig {
 
     private final UserService userService;
     private final PreFilter preFilter;
-
-    //private String[] WHITE_LIST = {"/auth/**","/mentors", "/mentors/{id}","/auth/refresh-token","/blogs","blogs/{id}","/mentor-policy","/customer-policy"};
-
+    private final CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
@@ -40,14 +39,15 @@ public class AppConfig {
 
     @Bean
     public SecurityFilterChain configure(@NonNull HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource)) // Thêm cấu hình CORS
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET,
-                                "/mentors", "/mentors/{id}",
-                                "/blogs", "/blogs/{id}",
+                                "/mentors", "/mentors/**",
+                                "/blogs", "/blogs/**",
                                 "/mentor-policies/**", "/customer-policies/**")
                         .permitAll()
-                        .requestMatchers("/auth/**", "/auth/refresh-token")
+                        .requestMatchers("/auth/**")
                         .permitAll()
                         .anyRequest().authenticated()
                 )

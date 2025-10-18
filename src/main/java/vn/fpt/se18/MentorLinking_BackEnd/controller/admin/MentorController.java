@@ -19,7 +19,6 @@ public class MentorController {
     private final MentorService mentorService;
 
     @GetMapping()
-    @PreAuthorize("hasRole('MENTOR')")
     public BaseResponse<MentorPageResponse> getAllMentors(@RequestParam(required = false) String keyword,
                                                           @RequestParam(defaultValue = "numberOfBooking:desc") String sort,
                                                           @RequestParam(defaultValue = "0") int page,
