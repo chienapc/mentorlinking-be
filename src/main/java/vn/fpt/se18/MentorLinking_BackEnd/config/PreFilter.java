@@ -35,6 +35,11 @@ public class PreFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         log.info("---------- doFilterInternal ----------");
+        String path = request.getRequestURI();
+        if (path.equals("/auth/refresh-token") || path.equals("/auth/login") || path.equals("/auth/signup")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         final String authorization = request.getHeader(AUTHORIZATION);
 

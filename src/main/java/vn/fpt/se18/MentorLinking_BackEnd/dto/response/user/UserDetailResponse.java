@@ -14,7 +14,7 @@ public class UserDetailResponse implements Serializable {
 
     private String email;
 
-    private String username;
+    private String fullName;
 
-    private UserStatus status;
+    private String status;
 }
