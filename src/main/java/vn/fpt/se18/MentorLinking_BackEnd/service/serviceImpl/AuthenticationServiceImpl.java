@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.ResetPasswordDTO;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.SignInRequest;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.SignUpMentorRequest;
@@ -57,6 +58,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public TokenResponse accessToken(SignInRequest request) {
         log.info("---------- authenticate ----------");
 
+        // authenticate
         var user = userService.getUserByEmail(request.getEmail());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getEmail(),
@@ -68,9 +70,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var accessToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
 
-        // save to db
+        // save to db - use email consistently
         tokenService.save(Token.builder()
-                .username(user.getUsername())
+                .username(user.getEmail()) // Use email instead of username
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build());
@@ -95,21 +97,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         if (StringUtils.isNotBlank(email)) {
             var user = userService.getUserByEmail(email);
-            var storedToken = tokenService.getByUsername(email); // key now is email
+            var storedToken = tokenService.getByUsername(user.getEmail()); // Use email consistently
 
             if (jwtService.isValid(refreshToken, REFRESH_TOKEN, user) &&
                     refreshToken.equals(storedToken.getRefreshToken())) {
                 var accessToken = jwtService.generateToken(user);
+                var newRefreshToken = jwtService.generateRefreshToken(user);
 
                 tokenService.save(Token.builder()
-                        .username(user.getUsername()) // email
+                        .username(user.getEmail()) // Use email consistently
                         .accessToken(accessToken)
-                        .refreshToken(refreshToken)
+                        .refreshToken(newRefreshToken)
                         .build());
 
                 return TokenResponse.builder()
                         .accessToken(accessToken)
-                        .refreshToken(refreshToken)
+                        .refreshToken(newRefreshToken)
                         .userId(user.getId())
                         .build();
             }
@@ -212,6 +215,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .orElseThrow(() -> new AppException(ErrorCode.UNCATEGORIZED, "Default role not found"));
 
         User user = User.builder()
+                .username(request.getEmail()) // Set username to email for consistency
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .fullname(request.getFullName())
@@ -224,9 +228,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var accessToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
 
-        // Save tokens to db
+        // Save tokens to db - use email consistently
         tokenService.save(Token.builder()
-                .username(user.getUsername())
+                .username(user.getEmail()) // Use email instead of username
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build());
@@ -263,11 +267,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .orElse(null);
         }
 
+        // Upload avatar if provided
         String avatarUrl = null;
         if (request.getAvatar() != null && !request.getAvatar().isEmpty()) {
-            avatarUrl = fileUploadService.uploadFile(request.getAvatar(), "avatars");
+//            avatarUrl = fileUploadService.uploadFile(request.getAvatar(), "avatars");
         }
 
+        // Create and save user
         User user = User.builder()
                 .username(request.getEmail())
                 .email(request.getEmail())
@@ -297,8 +303,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 List<String> certificateUrls = new ArrayList<>();
 
                 if (education.getDegreesFile() != null) {
-                        String certificateUrl = fileUploadService.uploadFile(education.getDegreesFile(), "certificates");
+                    for (MultipartFile file : education.getDegreesFile()) {
+                        String certificateUrl = fileUploadService.uploadFile(file, "certificates");
                         certificateUrls.add(certificateUrl);
+                    }
                 }
 
                 MentorEducation mentorEducation = MentorEducation.builder()
@@ -322,8 +330,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 List<String> experienceUrls = new ArrayList<>();
 
                 if (experience.getExperiencesFile() != null) {
-                        String experienceUrl = fileUploadService.uploadFile(experience.getExperiencesFile(), "experiences");
+                    for (MultipartFile file : experience.getExperiencesFile()) {
+                        String experienceUrl = fileUploadService.uploadFile(file, "experiences");
                         experienceUrls.add(experienceUrl);
+                    }
                 }
 
                 MentorExperience mentorExperience = MentorExperience.builder()
@@ -347,8 +357,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 List<String> scoreUrls = new ArrayList<>();
 
                 if (certificate.getCertificatesFile() != null) {
-                        String scoreUrl = fileUploadService.uploadFile(certificate.getCertificatesFile(), "tests");
+                    for (MultipartFile file : certificate.getCertificatesFile()) {
+                        String scoreUrl = fileUploadService.uploadFile(file, "tests");
                         scoreUrls.add(scoreUrl);
+                    }
                 }
 
                 MentorTest mentorTest = MentorTest.builder()
@@ -384,3 +396,4 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return user;
     }
 }
+

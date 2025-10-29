@@ -1,5 +1,9 @@
 package vn.fpt.se18.MentorLinking_BackEnd.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -31,6 +35,60 @@ public class ControllerAdvisor {
                         ex.getCustomMessage() != null ? ex.getCustomMessage() : ex.getErrorCode().getMessage()));
     }
 
+    // Xử lý JWT token hết hạn
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<BaseResponse<Object>> handleExpiredJwtException(ExpiredJwtException ex) {
+        log.warn("JWT token expired: {}", ex.getMessage());
+        ErrorCode errorCode = ErrorCode.JWT_EXPIRED;
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(setResponse(String.valueOf(errorCode.getCode()), errorCode.getMessage()));
+    }
+
+    // Xử lý JWT signature không hợp lệ
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<BaseResponse<Object>> handleSignatureException(SignatureException ex) {
+        log.warn("JWT signature invalid: {}", ex.getMessage());
+        ErrorCode errorCode = ErrorCode.JWT_INVALID_SIGNATURE;
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(setResponse(String.valueOf(errorCode.getCode()), errorCode.getMessage()));
+    }
+
+    // Xử lý JWT token malformed
+    @ExceptionHandler(MalformedJwtException.class)
+    public ResponseEntity<BaseResponse<Object>> handleMalformedJwtException(MalformedJwtException ex) {
+        log.warn("JWT token malformed: {}", ex.getMessage());
+        ErrorCode errorCode = ErrorCode.JWT_MALFORMED;
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(setResponse(String.valueOf(errorCode.getCode()), errorCode.getMessage()));
+    }
+
+    // Xử lý JWT token không được hỗ trợ
+    @ExceptionHandler(UnsupportedJwtException.class)
+    public ResponseEntity<BaseResponse<Object>> handleUnsupportedJwtException(UnsupportedJwtException ex) {
+        log.warn("JWT token unsupported: {}", ex.getMessage());
+        ErrorCode errorCode = ErrorCode.JWT_UNSUPPORTED;
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(setResponse(String.valueOf(errorCode.getCode()), errorCode.getMessage()));
+    }
+
+    // Xử lý JWT illegal argument
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<BaseResponse<Object>> handleIllegalArgumentException(IllegalArgumentException ex) {
+        // Kiểm tra nếu là lỗi JWT
+        if (ex.getMessage() != null && ex.getMessage().toLowerCase().contains("jwt")) {
+            log.warn("JWT illegal argument: {}", ex.getMessage());
+            ErrorCode errorCode = ErrorCode.JWT_ILLEGAL_ARGUMENT;
+            return ResponseEntity
+                    .status(errorCode.getHttpStatus())
+                    .body(setResponse(String.valueOf(errorCode.getCode()), errorCode.getMessage()));
+        }
+        // Nếu không phải lỗi JWT, xử lý như exception thông thường
+        return handleException(ex);
+    }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<BaseResponse<Object>> handleAccessDeniedException() {

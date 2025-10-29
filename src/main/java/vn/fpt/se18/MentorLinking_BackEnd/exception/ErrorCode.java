@@ -14,14 +14,19 @@ public enum ErrorCode {
     INVALID_INPUT("05", "INVALID_INPUT", HttpStatus.BAD_REQUEST),
     ERROR_PATH("06", "ERROR_PATH", HttpStatus.BAD_REQUEST),
     INVALID_ENDPOINT("07", "INVALID_ENDPOINT", HttpStatus.BAD_REQUEST),
+    JWT_EXPIRED("08", "JWT token has expired", HttpStatus.UNAUTHORIZED),
+    JWT_INVALID_SIGNATURE("09", "JWT signature is invalid", HttpStatus.UNAUTHORIZED),
+    JWT_MALFORMED("10", "JWT token is malformed", HttpStatus.UNAUTHORIZED),
+    JWT_UNSUPPORTED("11", "JWT token is unsupported", HttpStatus.UNAUTHORIZED),
+    JWT_ILLEGAL_ARGUMENT("12", "JWT token is invalid", HttpStatus.UNAUTHORIZED),
 
     // Role & Permission Error Codes
-    ROLE_NOT_FOUND("08", "Vai trò không tồn tại", HttpStatus.NOT_FOUND),
-    ROLE_CODE_EXISTED("09", "Mã vai trò đã tồn tại", HttpStatus.BAD_REQUEST),
-    ROLE_NAME_EXISTED("10", "Tên vai trò đã tồn tại", HttpStatus.BAD_REQUEST),
-    ROLE_IN_USE("11", "Vai trò đang được sử dụng, không thể xóa", HttpStatus.BAD_REQUEST),
-    PERMISSION_NOT_FOUND("12", "Quyền không tồn tại", HttpStatus.NOT_FOUND),
-    PERMISSION_NAME_EXISTED("13", "Tên quyền đã tồn tại", HttpStatus.BAD_REQUEST),
+    ROLE_NOT_FOUND("13", "Vai trò không tồn tại", HttpStatus.NOT_FOUND),
+    ROLE_CODE_EXISTED("14", "Mã vai trò đã tồn tại", HttpStatus.BAD_REQUEST),
+    ROLE_NAME_EXISTED("15", "Tên vai trò đã tồn tại", HttpStatus.BAD_REQUEST),
+    ROLE_IN_USE("16", "Vai trò đang được sử dụng, không thể xóa", HttpStatus.BAD_REQUEST),
+    PERMISSION_NOT_FOUND("17", "Quyền không tồn tại", HttpStatus.NOT_FOUND),
+    PERMISSION_NAME_EXISTED("18", "Tên quyền đã tồn tại", HttpStatus.BAD_REQUEST),
     ;
     private final String code;
     private final String message;

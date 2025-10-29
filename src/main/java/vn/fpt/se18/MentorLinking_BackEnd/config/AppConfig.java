@@ -16,9 +16,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 import vn.fpt.se18.MentorLinking_BackEnd.service.UserService;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+import org.springframework.http.HttpMethod;
+
 
 @Configuration
 @Profile("!prod")
@@ -27,9 +30,7 @@ public class AppConfig {
 
     private final UserService userService;
     private final PreFilter preFilter;
-
-    private String[] WHITE_LIST = {"/auth/**"};
-
+    private final CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
@@ -38,10 +39,22 @@ public class AppConfig {
 
     @Bean
     public SecurityFilterChain configure(@NonNull HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(WHITE_LIST).permitAll().anyRequest().authenticated())
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource)) // Thêm cấu hình CORS
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.GET,
+                                "/mentors", "/mentors/**",
+                                "/blogs", "/blogs/**",
+                                "/mentor-policies/**", "/customer-policies/**")
+                        .permitAll()
+                        .requestMatchers("/auth/**")
+                        .permitAll()
+                        .anyRequest().authenticated()
+                )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
-                .authenticationProvider(provider()).addFilterBefore(preFilter, UsernamePasswordAuthenticationFilter.class);
+                .authenticationProvider(provider())
+                .addFilterBefore(preFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
