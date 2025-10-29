@@ -8,7 +8,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.BaseRequest;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.user.GetMentorRequest;
-import vn.fpt.se18.MentorLinking_BackEnd.dto.request.user.GetUserRequest;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.response.BaseResponse;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.response.PageResponse;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.response.admin.MentorStatisticsResponse;
@@ -27,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class MentorServiceImpl implements MentorService {
+public class MentorAdminServiceImpl implements MentorService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;

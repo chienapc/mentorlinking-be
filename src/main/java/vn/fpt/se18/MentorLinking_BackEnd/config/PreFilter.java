@@ -49,7 +49,6 @@ public class PreFilter extends OncePerRequestFilter {
             return;
         }
 
-        String path = request.getRequestURI();
         String contextPath = request.getContextPath();
 
         // Remove context path if present

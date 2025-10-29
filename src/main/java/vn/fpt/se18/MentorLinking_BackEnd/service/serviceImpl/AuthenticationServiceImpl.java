@@ -9,7 +9,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.ResetPasswordDTO;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.SignInRequest;
 import vn.fpt.se18.MentorLinking_BackEnd.dto.request.auth.SignUpMentorRequest;
@@ -119,6 +118,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         throw new AppException(UNCATEGORIZED);
     }
+
     @Override
     public String removeToken(HttpServletRequest request) {
         log.info("---------- removeToken ----------");
@@ -212,7 +212,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         // Get role or set default role
         Role role = roleRepository.findByName("CUSTOMER")
-                    .orElseThrow(() -> new AppException(ErrorCode.UNCATEGORIZED, "Default role not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.UNCATEGORIZED, "Default role not found"));
 
         User user = User.builder()
                 .username(request.getEmail()) // Set username to email for consistency
@@ -302,12 +302,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             for (SignUpMentorRequest.MentorEducation education : request.getMentorEducations()) {
                 List<String> certificateUrls = new ArrayList<>();
 
-                if (education.getDegreesFile() != null) {
-                    for (MultipartFile file : education.getDegreesFile()) {
-                        String certificateUrl = fileUploadService.uploadFile(file, "certificates");
-                        certificateUrls.add(certificateUrl);
-                    }
-                }
+                String certificateUrl = fileUploadService.uploadFile(education.getDegreesFile(), "certificates");
+                certificateUrls.add(certificateUrl);
 
                 MentorEducation mentorEducation = MentorEducation.builder()
                         .user(user)
@@ -329,12 +325,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             for (SignUpMentorRequest.Experience experience : request.getExperiences()) {
                 List<String> experienceUrls = new ArrayList<>();
 
-                if (experience.getExperiencesFile() != null) {
-                    for (MultipartFile file : experience.getExperiencesFile()) {
-                        String experienceUrl = fileUploadService.uploadFile(file, "experiences");
-                        experienceUrls.add(experienceUrl);
-                    }
-                }
+                String experienceUrl = fileUploadService.uploadFile(experience.getExperiencesFile(), "experiences");
+                experienceUrls.add(experienceUrl);
 
                 MentorExperience mentorExperience = MentorExperience.builder()
                         .user(user)
@@ -356,12 +348,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             for (SignUpMentorRequest.Certificate certificate : request.getCertificates()) {
                 List<String> scoreUrls = new ArrayList<>();
 
-                if (certificate.getCertificatesFile() != null) {
-                    for (MultipartFile file : certificate.getCertificatesFile()) {
-                        String scoreUrl = fileUploadService.uploadFile(file, "tests");
-                        scoreUrls.add(scoreUrl);
-                    }
-                }
+                String scoreUrl = fileUploadService.uploadFile(certificate.getCertificatesFile(), "tests");
+                scoreUrls.add(scoreUrl);
+
 
                 MentorTest mentorTest = MentorTest.builder()
                         .user(user)
